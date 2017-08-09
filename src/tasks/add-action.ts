@@ -7,6 +7,7 @@ import {
     UnionTypeNode,
     VariableStatement
 } from 'typescript';
+import * as fs from 'fs';
 
 export const createInterface = (name: string): Statement => {
     const propModifiers: Modifier[] = [
@@ -131,8 +132,8 @@ export const isActionTypesAssignment = (stmt: Statement): boolean =>
     stmt.kind === SyntaxKind.VariableStatement && (<Identifier>(<VariableStatement> stmt).declarationList.declarations[0].name).text === 'ActionTypes';
 
 export const addAction = (code: string) => {
-    const originalSourceFile = ts.createSourceFile("target.ts", code, ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-    const resultFile = ts.createSourceFile(path.join(__dirname, "someFileName.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    const originalSourceFile = ts.createSourceFile("action.ts", code, ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    const resultFile = ts.createSourceFile(path.join(__dirname, "action.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
     let newStatements = originalSourceFile.statements
         .filter(stmt => !isActionUnionType(stmt) && !isActionTypesAssignment(stmt));
@@ -164,4 +165,31 @@ export const addAction = (code: string) => {
     } catch (e) {
         console.log('error: ', e);
     }
+};
+
+export const execute = (args: string[]) => {
+    const uiComponentPath = args[0];
+    const actionFilePath = path.join(uiComponentPath, 'action.ts');
+    // TODO: Use async methods
+    const actionFileExists = fs.existsSync(actionFilePath);
+    const code = actionFileExists ? fs.readFileSync(actionFilePath, 'utf8') : '';
+
+    const newCode = addAction(code);
+    fs.writeFileSync(actionFilePath, newCode, 'utf8');
+};
+
+export const task: TsToolBeltTask = {
+    argumentInfo: [
+        {
+            description: 'UI Component Path',
+            required: true,
+            defaultValue: './'
+        },
+        {
+            description: 'Action Name',
+            required: true
+        }
+    ],
+    command: 'add-action',
+    execute: execute
 };

@@ -1,4 +1,4 @@
-import {addAction} from '../src/tasks/add-action';
+import {addAction} from '../../src/tasks/add-action';
 
 const code = 'export interface Action01 {\n' +
     '    type: typeof ActionTypes.ACTION_01;\n' +

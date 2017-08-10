@@ -131,24 +131,23 @@ export const isActionUnionType = (stmt: Statement): boolean =>
 export const isActionTypesAssignment = (stmt: Statement): boolean =>
     stmt.kind === SyntaxKind.VariableStatement && (<Identifier>(<VariableStatement> stmt).declarationList.declarations[0].name).text === 'ActionTypes';
 
-export const addAction = (code: string) => {
+export const addAction = (code: string, actionName: string) => {
     const originalSourceFile = ts.createSourceFile("action.ts", code, ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
     const resultFile = ts.createSourceFile(path.join(__dirname, "action.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
     let newStatements = originalSourceFile.statements
         .filter(stmt => !isActionUnionType(stmt) && !isActionTypesAssignment(stmt));
 
-    const nameNewAction = 'ActionTestName';
-    const qualifiedActionType = `SOME_QUALIFIED_PREFIX_${nameNewAction}`;
+    const qualifiedActionType = `SOME_QUALIFIED_PREFIX_${actionName}`;
     newStatements.push(createActionTypeConstants(qualifiedActionType));
-    newStatements.push(createInterface(nameNewAction));
-    newStatements.push(createActionCreator(nameNewAction));
+    newStatements.push(createInterface(actionName));
+    newStatements.push(createActionCreator(actionName));
 
     const actionUnionTypeDeclaration = originalSourceFile.statements.find(stm => isActionUnionType(stm));
-    newStatements.push(createOrUpdateActionUnionTypeDeclaration(nameNewAction, actionUnionTypeDeclaration));
+    newStatements.push(createOrUpdateActionUnionTypeDeclaration(actionName, actionUnionTypeDeclaration));
 
     const actionTypesAssignment = originalSourceFile.statements.find(stm => isActionTypesAssignment(stm));
-    newStatements.push(createOrUpdateActionTypesAssignment(nameNewAction, qualifiedActionType, actionTypesAssignment));
+    newStatements.push(createOrUpdateActionTypesAssignment(actionName, qualifiedActionType, actionTypesAssignment));
 
     const sourceFile = ts.updateSourceFileNode(originalSourceFile, newStatements);
 
@@ -169,12 +168,13 @@ export const addAction = (code: string) => {
 
 export const execute = (args: string[]) => {
     const uiComponentPath = args[0];
+    const actionName = args[1];
     const actionFilePath = path.join(uiComponentPath, 'action.ts');
     // TODO: Use async methods
     const actionFileExists = fs.existsSync(actionFilePath);
     const code = actionFileExists ? fs.readFileSync(actionFilePath, 'utf8') : '';
 
-    const newCode = addAction(code);
+    const newCode = addAction(code, actionName);
     fs.writeFileSync(actionFilePath, newCode, 'utf8');
 };
 

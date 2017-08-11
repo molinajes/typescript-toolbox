@@ -107,7 +107,7 @@ export const execute = (args: string[]) => {
     fs.writeFileSync(reducerFilePath, newCode, 'utf8');
 };
 
-export const task: TsToolBoxTask = {
+export const task: TsToolboxTask = {
     argumentInfo: [
         {
             description: 'UI Component Path',

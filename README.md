@@ -1,4 +1,4 @@
-# TsToolBox
+# TsToolbox
 > Toolkit for building scalable web applications with TypeScript, React, Redux and Apollo-Client (inspired by [ReKit](https://github.com/supnate/rekit))
 
 
@@ -27,12 +27,12 @@ Typescript code.
 yarn:
 
 ```sh
-yarn add ts-tool-box --dev
+yarn add ts-toolbox --dev
 ```
 
 npm:
 ```sh
-npm install ts-tool-box --save-dev
+npm install ts-toolbox --save-dev
 ```
 
 ## Usage
@@ -44,7 +44,7 @@ Currently, the following tasks are supported:
         - Path of UI Component
         - Action name 
 
-```>ts-tool-box add-action ./app/components/my-component/ NewAction```
+```>ts-toolbox add-action ./app/components/my-component/ NewAction```
 
 - If there is no file `actions.ts` in the specified path yet, this will create a new file with the following content:
     

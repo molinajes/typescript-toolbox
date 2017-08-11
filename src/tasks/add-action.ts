@@ -182,7 +182,7 @@ export const execute = (args: string[]) => {
     fs.writeFileSync(actionFilePath, newCode, 'utf8');
 };
 
-export const task: TsToolBeltTask = {
+export const task: TsToolBoxTask = {
     argumentInfo: [
         {
             description: 'UI Component Path',

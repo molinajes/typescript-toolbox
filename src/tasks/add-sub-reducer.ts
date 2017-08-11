@@ -142,7 +142,7 @@ export const execute = (args: string[]) => {
     fs.writeFileSync(parentReducerPath, newCode, 'utf8');
 };
 
-export const task: TsToolBeltTask = {
+export const task: TsToolBoxTask = {
     argumentInfo: [
         {
             description: 'Path to file of parent reducer',

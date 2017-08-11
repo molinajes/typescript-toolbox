@@ -2,7 +2,7 @@ import {task as addActionTask} from './src/tasks/add-action';
 import {task as addReducerTask} from './src/tasks/add-reducer';
 import {task as addSubReducerTask} from './src/tasks/add-sub-reducer';
 
-const tasks: TsToolBeltTask[] = [addActionTask, addReducerTask, addSubReducerTask];
+const tasks: TsToolBoxTask[] = [addActionTask, addReducerTask, addSubReducerTask];
 
 const command = process.argv[2];
 const task = tasks.find(t => t.command === command);

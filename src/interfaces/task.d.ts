@@ -4,7 +4,7 @@ interface ArgumentInfo {
     readonly defaultValue?: string;
 }
 
-interface TsToolBeltTask {
+interface TsToolBoxTask {
     readonly command: string;
     readonly argumentInfo: ArgumentInfo[];
     readonly execute: (args: string[]) => void;

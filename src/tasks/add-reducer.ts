@@ -102,14 +102,9 @@ export const addReducer = (actionPath: string) => {
 
 export const execute = (args: string[]) => {
     const uiComponentPath = args[0];
-    const actionPath = args[1];
-    const actionFilePath = path.join(uiComponentPath, 'reducer.ts');
-    // TODO: Use async methods
-    const actionFileExists = fs.existsSync(actionFilePath);
-    const code = actionFileExists ? fs.readFileSync(actionFilePath, 'utf8') : '';
-
-    const newCode = addReducer(actionPath);
-    fs.writeFileSync(actionFilePath, newCode, 'utf8');
+    const reducerFilePath = path.join(uiComponentPath, 'reducer.ts');
+    const newCode = addReducer(reducerFilePath);
+    fs.writeFileSync(reducerFilePath, newCode, 'utf8');
 };
 
 export const task: TsToolBeltTask = {
@@ -118,12 +113,8 @@ export const task: TsToolBeltTask = {
             description: 'UI Component Path',
             required: true,
             defaultValue: './'
-        },
-        {
-            description: 'Actions Path',
-            required: true
         }
     ],
-    command: 'add-action',
+    command: 'add-reducer',
     execute: execute
 };

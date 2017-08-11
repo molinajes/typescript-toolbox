@@ -20,7 +20,7 @@ Writing this additional code can make development a little bit more complicated 
 You can use this tool to create/rename/move/delete those elements with all the necessary 
 Typescript code. 
 
-![Example of 'add-Action' task](http://imgur.com/WMGhwyT.gif)
+![Example of 'add-Action' task](http://i.imgur.com/WMGhwyT.gif)
 
 ## Installation
 

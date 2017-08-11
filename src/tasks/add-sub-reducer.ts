@@ -16,7 +16,7 @@ export const getReducerImportAlias = (subUiComponentName: string) => `reducer${g
 export const getDefaultStateImportAlias = (subUiComponentName: string) => `defaultState${getImportAliasSuffix(subUiComponentName)}`;
 export const getStateImportAlias = (subUiComponentName: string) => `${getImportAliasSuffix(subUiComponentName)}State`;
 
-export const createRecucerImports = (subReducerPath: string, subUiComponentName: string): Statement => {
+export const createReducerImports = (subReducerPath: string, subUiComponentName: string): Statement => {
     const importSpecifiers = [
         ts.createImportSpecifier(ts.createIdentifier('reducer'), ts.createIdentifier(getReducerImportAlias(subUiComponentName))),
         ts.createImportSpecifier(ts.createIdentifier('defaultState'), ts.createIdentifier(getDefaultStateImportAlias(subUiComponentName))),
@@ -93,7 +93,7 @@ export const addSubReducer = (parentReducerCode: string, subReducerPath: string,
 
         // Insert new import declaration directly after existing import declarations
         if (!addedImportStatement && statement.kind != SyntaxKind.ImportDeclaration) {
-            newStatements.push(createRecucerImports(subReducerPathNoFileExt, subUiComponentName));
+            newStatements.push(createReducerImports(subReducerPathNoFileExt, subUiComponentName));
             addedImportStatement = true;
         }
 

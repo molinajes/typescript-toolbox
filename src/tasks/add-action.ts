@@ -38,7 +38,7 @@ export const createActionCreator = (name: string, typeConstantName: string) => {
 
     const stmtReturn = ts.createReturn(
         ts.createObjectLiteral(
-            [ts.createPropertyAssignment('type', ts.createPropertyAccess(ts.createIdentifier('ActionTypes'), name))]
+            [ts.createPropertyAssignment('type', ts.createPropertyAccess(ts.createIdentifier('ActionTypes'), typeConstantName))]
         )
     );
     const expr = ts.createArrowFunction(
@@ -100,7 +100,7 @@ const createOrUpdateActionUnionTypeDeclaration = (name: string, oldStmt?: Statem
     return stmt;
 };
 
-const createOrUpdateActionTypesAssignment = (name: string, actionTypeConstantName: string, oldStmt?: Statement) => {
+const createOrUpdateActionTypesAssignment = (actionTypeConstantName: string, oldStmt?: Statement) => {
     const declaration = ts.createVariableDeclaration('ActionTypes', undefined, ts.createObjectLiteral());
     const stmt = !!oldStmt ?
         oldStmt
@@ -115,7 +115,7 @@ const createOrUpdateActionTypesAssignment = (name: string, actionTypeConstantNam
             const properties = objectLiteralExpr.properties;
 
             const newProperty = ts.createPropertyAssignment(
-                name,
+                actionTypeConstantName,
                 ts.createTypeAssertion(
                     ts.createTypeQueryNode(ts.createIdentifier(actionTypeConstantName)),
                     ts.createIdentifier(actionTypeConstantName)));
@@ -149,7 +149,7 @@ export const addAction = (code: string, actionName: string, actionTypeConstant: 
     newStatements.push(createOrUpdateActionUnionTypeDeclaration(actionName, actionUnionTypeDeclaration));
 
     const actionTypesAssignment = originalSourceFile.statements.find(stm => isActionTypesAssignment(stm));
-    newStatements.push(createOrUpdateActionTypesAssignment(actionName, actionTypeConstant, actionTypesAssignment));
+    newStatements.push(createOrUpdateActionTypesAssignment(actionTypeConstant, actionTypesAssignment));
 
     const sourceFile = ts.updateSourceFileNode(originalSourceFile, newStatements);
 
@@ -171,7 +171,7 @@ export const addAction = (code: string, actionName: string, actionTypeConstant: 
 export const execute = (args: string[]) => {
     const uiComponentPath = args[0];
     const actionName = args[1];
-    const actionTypeConstant = args[2] || convertCamelCaseToConstant(actionName);
+    const actionTypeConstant = args[2] || convertCamelCaseToConstant(actionName).toUpperCase();
     const actionFilePath = path.join(uiComponentPath, 'action.ts');
 
     // TODO: Use async methods

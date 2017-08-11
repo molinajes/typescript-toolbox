@@ -8,8 +8,9 @@ import {
     VariableStatement
 } from 'typescript';
 import * as fs from 'fs';
+import {convertCamelCaseToConstant} from '../utils/string-utils';
 
-export const createInterface = (name: string): Statement => {
+export const createInterface = (name: string, actionTypeConstant: string): Statement => {
     const propModifiers: Modifier[] = [
         ts.createToken(SyntaxKind.ReadonlyKeyword)
     ];
@@ -18,7 +19,7 @@ export const createInterface = (name: string): Statement => {
             propModifiers,
             'type',
             undefined,
-            ts.createTypeQueryNode(ts.createQualifiedName(ts.createIdentifier('ActionTypes'), name)),
+            ts.createTypeQueryNode(ts.createQualifiedName(ts.createIdentifier('ActionTypes'), actionTypeConstant)),
             undefined
         )
     ];
@@ -32,7 +33,7 @@ export const createInterface = (name: string): Statement => {
     return stmInterface;
 };
 
-export const createActionCreator = (name: string) => {
+export const createActionCreator = (name: string, typeConstantName: string) => {
     const actionCreateName = `create${name}`;
 
     const stmtReturn = ts.createReturn(
@@ -56,7 +57,7 @@ export const createActionCreator = (name: string) => {
 };
 
 const createActionTypeConstants = (name: string) => {
-    const expr = ts.createLiteral(name)
+    const expr = ts.createLiteral(name);
     const declaration = ts.createVariableDeclaration(name, undefined, expr);
     const stmConstant = ts.createVariableStatement(
         [ts.createToken(SyntaxKind.ExportKeyword)],
@@ -126,28 +127,29 @@ const createOrUpdateActionTypesAssignment = (name: string, actionTypeConstantNam
 };
 
 export const isActionUnionType = (stmt: Statement): boolean =>
-    stmt.kind === SyntaxKind.TypeAliasDeclaration && (<TypeAliasDeclaration> stmt).name.text === 'Action';
+    stmt && stmt.kind === SyntaxKind.TypeAliasDeclaration && (<TypeAliasDeclaration> stmt).name.text === 'Action';
 
 export const isActionTypesAssignment = (stmt: Statement): boolean =>
-    stmt.kind === SyntaxKind.VariableStatement && (<Identifier>(<VariableStatement> stmt).declarationList.declarations[0].name).text === 'ActionTypes';
+    stmt && stmt.kind === SyntaxKind.VariableStatement
+    && (<VariableStatement> stmt).declarationList.declarations[0]
+    && (<Identifier>(<VariableStatement> stmt).declarationList.declarations[0].name).text === 'ActionTypes';
 
-export const addAction = (code: string, actionName: string) => {
+export const addAction = (code: string, actionName: string, actionTypeConstant: string) => {
     const originalSourceFile = ts.createSourceFile("action.ts", code, ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
     const resultFile = ts.createSourceFile(path.join(__dirname, "action.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
 
     let newStatements = originalSourceFile.statements
         .filter(stmt => !isActionUnionType(stmt) && !isActionTypesAssignment(stmt));
 
-    const qualifiedActionType = `SOME_QUALIFIED_PREFIX_${actionName}`;
-    newStatements.push(createActionTypeConstants(qualifiedActionType));
-    newStatements.push(createInterface(actionName));
-    newStatements.push(createActionCreator(actionName));
+    newStatements.push(createActionTypeConstants(actionTypeConstant));
+    newStatements.push(createInterface(actionName, actionTypeConstant));
+    newStatements.push(createActionCreator(actionName, actionTypeConstant));
 
     const actionUnionTypeDeclaration = originalSourceFile.statements.find(stm => isActionUnionType(stm));
     newStatements.push(createOrUpdateActionUnionTypeDeclaration(actionName, actionUnionTypeDeclaration));
 
     const actionTypesAssignment = originalSourceFile.statements.find(stm => isActionTypesAssignment(stm));
-    newStatements.push(createOrUpdateActionTypesAssignment(actionName, qualifiedActionType, actionTypesAssignment));
+    newStatements.push(createOrUpdateActionTypesAssignment(actionName, actionTypeConstant, actionTypesAssignment));
 
     const sourceFile = ts.updateSourceFileNode(originalSourceFile, newStatements);
 
@@ -169,12 +171,14 @@ export const addAction = (code: string, actionName: string) => {
 export const execute = (args: string[]) => {
     const uiComponentPath = args[0];
     const actionName = args[1];
+    const actionTypeConstant = args[2] || convertCamelCaseToConstant(actionName);
     const actionFilePath = path.join(uiComponentPath, 'action.ts');
+
     // TODO: Use async methods
     const actionFileExists = fs.existsSync(actionFilePath);
     const code = actionFileExists ? fs.readFileSync(actionFilePath, 'utf8') : '';
 
-    const newCode = addAction(code, actionName);
+    const newCode = addAction(code, actionName, actionTypeConstant);
     fs.writeFileSync(actionFilePath, newCode, 'utf8');
 };
 
@@ -188,6 +192,10 @@ export const task: TsToolBeltTask = {
         {
             description: 'Action Name',
             required: true
+        },
+        {
+            description: 'Action Type Constant (default is action name as pascal case',
+            required: false
         }
     ],
     command: 'add-action',

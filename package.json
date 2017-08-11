@@ -1,9 +1,20 @@
 {
   "name": "ts-tool-belt",
-  "version": "0.1.0",
+  "version": "0.0.1",
+  "keywords": [
+    "typescript",
+    "react",
+    "redux",
+    "apollo-client",
+    "rekit"
+  ],
   "main": "lib/index.js",
   "author": "Marian Palkus <marian.palkus@cap3.de>",
+  "description": "Command line tool to manage actions, reducers, components and apollo queries/mutations.",
   "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "@types/jest": "^20.0.6",
     "@types/node": "^8.0.19",

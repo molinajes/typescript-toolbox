@@ -18,5 +18,11 @@ export function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+export const convertCamelCaseToConstant = (myStr: string) => {
+    return !myStr ? null : myStr.replace(/([A-Z])/g, function (g) {
+        return '_' + g[0].toUpperCase()
+    });
+};
+
 // Taken from https://stackoverflow.com/questions/4250364/how-to-trim-a-file-extension-from-a-string-in-javascript
 export const removeFileExtension = (pathStr: string): string => pathStr.replace(/\.[^/.]+$/, "");

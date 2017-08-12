@@ -1,6 +1,7 @@
 # TsToolbox
 > Toolkit for building scalable web applications with TypeScript, React, Redux and Apollo-Client (inspired by [ReKit](https://github.com/supnate/rekit))
 
+[![Build Status](https://travis-ci.org/MarianPalkus/ts-toolbox.svg?branch=master)](https://travis-ci.org/MarianPalkus/ts-toolbox)
 
 ⚠⚠⚠ Work in Progress ⚠⚠⚠
 

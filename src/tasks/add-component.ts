@@ -3,6 +3,7 @@ import * as ts from 'typescript';
 import {NodeFlags, Statement, SyntaxKind} from 'typescript';
 import * as fs from 'fs';
 import {convertCamelCaseToHyphens} from '../utils/string-utils';
+import {createEmptyInterface, createImport} from '../utils/ts-utils';
 
 export const componentPropsInterfaceName = 'Props';
 export type AddComponentType = 'stateless' | 'class' | 'stateful';
@@ -18,27 +19,13 @@ export const createImports = (type: AddComponentType): Statement[] => {
         ts.createLiteral('react'));
 
     const importedComponent = type === 'class' ? 'Component' : (type === 'stateless' ? 'StatelessComponent' : 'Component');
-    const componentImportSpecifier =
-        ts.createImportSpecifier(undefined, ts.createIdentifier(importedComponent));
 
-    const componentImport = ts.createImportDeclaration(
-        [],
-        [],
-        ts.createImportClause(undefined, ts.createNamedImports([componentImportSpecifier])),
-        ts.createLiteral('react'));
-
+    const componentImport = createImport([{element: importedComponent}], 'react');
     return [reactImport, componentImport];
 };
 
-export const createInterface = (): Statement => {
-    return ts.createInterfaceDeclaration(
-        undefined,
-        undefined,
-        componentPropsInterfaceName,
-        undefined,
-        undefined,
-        []);
-};
+export const createInterface = (): Statement =>
+    createEmptyInterface(componentPropsInterfaceName);
 
 export const createStatelessComponent = (name: string) => {
     const stmtReturn = ts.createReturn(
@@ -68,7 +55,7 @@ export const createStatelessComponent = (name: string) => {
 };
 
 export const addComponent = (componentFilePath: string, componentName: string, componentType: AddComponentType) => {
-    const resultFile = ts.createSourceFile(componentFilePath, "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TSX);
+    const resultFile = ts.createSourceFile(componentFilePath, "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX);
     let newStatements = [];
 
     createImports(componentType).forEach(stmt => newStatements.push(stmt));

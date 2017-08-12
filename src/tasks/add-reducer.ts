@@ -2,29 +2,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 import {NodeFlags, Statement, SyntaxKind} from 'typescript';
+import {createEmptyInterface, createImport} from '../utils/ts-utils';
 
 export const stateInterfaceName = 'State';
 export const defaultStateConstName = 'defaultState';
 export const reducerFunctionName = `reducer`;
 
-export const createActionImport = (actionPath: string): Statement => {
-    const actionIdentifier = ts.createIdentifier('Action');
-    return ts.createImportDeclaration(
-        [],
-        [],
-        ts.createImportClause(undefined, ts.createNamedImports([ts.createImportSpecifier(undefined, actionIdentifier)])),
-        ts.createLiteral(actionPath));
-};
+export const createActionImport = (actionPath: string): Statement =>
+    createImport([{element: 'Action'}], actionPath);
 
-export const createInterface = (): Statement => {
-    return ts.createInterfaceDeclaration(
-        undefined,
-        [ts.createToken(SyntaxKind.ExportKeyword)],
-        stateInterfaceName,
-        undefined,
-        undefined,
-        []);
-};
+export const createInterface = (): Statement =>
+    createEmptyInterface(stateInterfaceName);
 
 const createDefaultStateConstant = () => {
     const expr = ts.createObjectLiteral();
@@ -75,7 +63,7 @@ export const createReducerFunction = () => {
 };
 
 export const addReducer = (actionPath: string) => {
-    const resultFile = ts.createSourceFile(path.join(__dirname, "reducer.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    const resultFile = ts.createSourceFile(path.join(__dirname, "reducer.ts"), "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
     const newStatements = [
         createActionImport(actionPath),

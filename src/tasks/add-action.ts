@@ -2,35 +2,25 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import {
     Identifier,
-    Modifier, NodeArray, NodeFlags, ObjectLiteralExpression, Statement, SyntaxKind, TypeAliasDeclaration, TypeElement,
+    NodeArray,
+    NodeFlags,
+    ObjectLiteralExpression,
+    Statement,
+    SyntaxKind,
+    TypeAliasDeclaration,
     TypeNode,
     UnionTypeNode,
     VariableStatement
 } from 'typescript';
 import * as fs from 'fs';
 import {convertCamelCaseToConstant} from '../utils/string-utils';
+import {createInterface} from '../utils/ts-utils';
 
-export const createInterface = (name: string, actionTypeConstant: string): Statement => {
-    const propModifiers: Modifier[] = [
-        ts.createToken(SyntaxKind.ReadonlyKeyword)
-    ];
-    const members: TypeElement[] = [
-        ts.createPropertySignature(
-            propModifiers,
-            'type',
-            undefined,
-            ts.createTypeQueryNode(ts.createQualifiedName(ts.createIdentifier('ActionTypes'), actionTypeConstant)),
-            undefined
-        )
-    ];
-    const stmInterface = ts.createInterfaceDeclaration(
-        undefined,
-        undefined,
-        name,
-        undefined,
-        undefined,
-        members);
-    return stmInterface;
+export const createActionInterface = (name: string, actionTypeConstant: string): Statement => {
+    const propTypeType = ts.createTypeQueryNode(
+        ts.createQualifiedName(ts.createIdentifier('ActionTypes'),
+            actionTypeConstant));
+    return createInterface(name, [{name: 'type', type: propTypeType}]);
 };
 
 export const createActionCreator = (name: string, typeConstantName: string) => {
@@ -135,14 +125,14 @@ export const isActionTypesAssignment = (stmt: Statement): boolean =>
     && (<Identifier>(<VariableStatement> stmt).declarationList.declarations[0].name).text === 'ActionTypes';
 
 export const addAction = (code: string, actionName: string, actionTypeConstant: string) => {
-    const originalSourceFile = ts.createSourceFile("action.ts", code, ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-    const resultFile = ts.createSourceFile(path.join(__dirname, "action.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    const originalSourceFile = ts.createSourceFile("action.ts", code, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+    const resultFile = ts.createSourceFile(path.join(__dirname, "action.ts"), "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
     let newStatements = originalSourceFile.statements
         .filter(stmt => !isActionUnionType(stmt) && !isActionTypesAssignment(stmt));
 
     newStatements.push(createActionTypeConstants(actionTypeConstant));
-    newStatements.push(createInterface(actionName, actionTypeConstant));
+    newStatements.push(createActionInterface(actionName, actionTypeConstant));
     newStatements.push(createActionCreator(actionName, actionTypeConstant));
 
     const actionUnionTypeDeclaration = originalSourceFile.statements.find(stm => isActionUnionType(stm));

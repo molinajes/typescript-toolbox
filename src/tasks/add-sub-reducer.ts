@@ -79,8 +79,8 @@ export const isDefaultStateStatement = (stmt: Statement): boolean =>
 
 export const addSubReducer = (parentReducerCode: string, subReducerPath: string, statePropertyName: string) => {
     // TODO: Real path necessary?
-    const originalSourceFile = ts.createSourceFile("reducer.ts", parentReducerCode, ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-    const resultFile = ts.createSourceFile(path.join(__dirname, "reducer.ts"), "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+    const originalSourceFile = ts.createSourceFile("reducer.ts", parentReducerCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+    const resultFile = ts.createSourceFile(path.join(__dirname, "reducer.ts"), "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
     const subReducerPathNoFileExt = removeFileExtension(subReducerPath);
     const subUiComponentName = path.basename(subReducerPathNoFileExt);

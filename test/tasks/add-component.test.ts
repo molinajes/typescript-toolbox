@@ -2,7 +2,7 @@ import {addComponent} from '../../src/tasks/add-component';
 
 const expectedResult = 'import * as React from "react";\n' +
     'import { StatelessComponent } from "react";\n' +
-    'interface Props {\n' +
+    'export interface Props {\n' +
     '}\n' +
     'export const MyComponent: StatelessComponent<Props> = (props: Props) => {\n' +
     '    return <div />;\n' +

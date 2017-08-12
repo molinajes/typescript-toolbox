@@ -32,7 +32,7 @@ export const createImport = (imports: Import[], fromPath: string): Statement => 
 export const createEmptyInterface = (interfaceName: string) => {
     return ts.createInterfaceDeclaration(
         undefined,
-        undefined,
+        [ts.createToken(SyntaxKind.ExportKeyword)],
         interfaceName,
         undefined,
         undefined,

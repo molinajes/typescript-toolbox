@@ -9,11 +9,15 @@
     "rekit"
   ],
   "main": "lib/index.js",
+  "bin": {
+    "ts-tool-belt": "lib/index.js"
+  },
   "author": "Marian Palkus <marian.palkus@cap3.de>",
   "description": "Command line tool to manage actions, reducers, components and apollo queries/mutations.",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prepare": "tsc"
   },
   "dependencies": {
     "@types/jest": "^20.0.6",

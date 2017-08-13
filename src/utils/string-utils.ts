@@ -1,8 +1,17 @@
 // Taken from https://gist.github.com/youssman/745578062609e8acac9f
 export const convertCamelCaseToHyphens = (myStr: string) => {
-    return !myStr ? null : myStr.replace(/([A-Z])/g, function (g) {
+    const hyphensString = !myStr ? null : myStr.replace(/([A-Z])/g, function (g) {
         return '-' + g[0].toLowerCase()
     });
+
+    if (!hyphensString) {
+        return '';
+    }
+
+    if (hyphensString.startsWith('-')) {
+        return hyphensString.slice(1);
+    }
+    return hyphensString;
 };
 
 // Taken from https://stackoverflow.com/questions/6660977/convert-hyphens-to-camel-case-camelcase
@@ -10,7 +19,6 @@ export const convertHyphensToCamelCase = (myString: string) => {
     return myString.replace(/-([a-z])/g, function (g) {
         return g[1].toUpperCase();
     });
-
 };
 
 // Taken from https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
@@ -25,7 +33,7 @@ export const convertCamelCaseToConstant = (myStr: string) => {
 
     const constantString = myStr.replace(/([A-Z])/g, function (g) {
         return '_' + g[0].toUpperCase()
-    });
+    }).toUpperCase();
 
     if (constantString.startsWith('_')) {
         return constantString.slice(1);

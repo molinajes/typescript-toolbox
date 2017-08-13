@@ -29,6 +29,14 @@ export const createImport = (imports: Import[], fromPath: string): Statement => 
         ts.createLiteral(fromPath));
 };
 
+export const createNamespaceImport = (alias: string, fromPath: string): Statement => {
+    return ts.createImportDeclaration(
+        [],
+        [],
+        ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(alias))),
+        ts.createLiteral(fromPath));
+};
+
 export const createEmptyInterface = (interfaceName: string) => {
     return ts.createInterfaceDeclaration(
         undefined,

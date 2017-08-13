@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import {NodeFlags, Statement, SyntaxKind} from 'typescript';
 import {convertCamelCaseToHyphens} from '../utils/string-utils';
-import {createEmptyInterface, createImport} from '../utils/ts-utils';
+import {createEmptyInterface, createImport, createNamespaceImport} from '../utils/ts-utils';
 
 export const componentPropsInterfaceName = 'Props';
 export type AddComponentType = 'stateless' | 'class' | 'stateful';
@@ -11,11 +11,7 @@ export const createImports = (type: AddComponentType): Statement[] => {
     const reactImportSpecifier =
         ts.createNamespaceImport(ts.createIdentifier('React'));
 
-    const reactImport = ts.createImportDeclaration(
-        [],
-        [],
-        ts.createImportClause(undefined, reactImportSpecifier),
-        ts.createLiteral('react'));
+    const reactImport = createNamespaceImport('React', 'react');
 
     const importedComponent = type === 'class' ? 'Component' : (type === 'stateless' ? 'StatelessComponent' : 'Component');
 

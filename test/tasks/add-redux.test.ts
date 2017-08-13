@@ -17,7 +17,7 @@ test('replacePropsInComponent', () => {
         '}\n' +
         'export interface ReduxDispatchProps {\n' +
         '}\n' +
-        'export type AllProps = Props | ReduxStateProps | ReduxDispatchProps;\n' +
+        'export type AllProps = Props & ReduxStateProps & ReduxDispatchProps;\n' +
         'export const mapStateToProps = (): ReduxStateProps => {\n' +
         '    return {};\n' +
         '};\n' +

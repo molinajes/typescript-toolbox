@@ -35,9 +35,9 @@ export const addReduxDispatchPropsInterface = (): Statement =>
 export const updateAllPropsTypeDeclaration = (oldStmt: TypeAliasDeclaration): Statement => {
     const stmt = !!oldStmt ? oldStmt : ts.createTypeAliasDeclaration([],
         [ts.createToken(SyntaxKind.ExportKeyword)],
-        'Action',
+        containerAllPropsTypeName,
         [],
-        ts.createUnionTypeNode([]));
+        ts.createIntersectionTypeNode([]));
 
     if (stmt.kind === SyntaxKind.TypeAliasDeclaration) {
         const typeAliasDeclaration = <TypeAliasDeclaration> stmt;
@@ -54,7 +54,7 @@ export const updateAllPropsTypeDeclaration = (oldStmt: TypeAliasDeclaration): St
         types.push(ts.createTypeReferenceNode(reduxStatePropsInterfaceName, []));
         types.push(ts.createTypeReferenceNode(reduxDispatchPropsInterfaceName, []));
 
-        const updatedUnionType = ts.createUnionTypeNode(types);
+        const updatedUnionType = ts.createIntersectionTypeNode(types);
         return ts.updateTypeAliasDeclaration(
             typeAliasDeclaration,
             [],
@@ -109,10 +109,10 @@ export const updateComponentConstantWithRedux = (oldStatement: VariableStatement
 };
 
 export const isPropsInterface = (stmt: Statement): boolean =>
-    stmt && stmt.kind === SyntaxKind.InterfaceDeclaration && (<InterfaceDeclaration> stmt).name.text === componentPropsInterfaceName;
+    stmt && stmt.kind === SyntaxKind.InterfaceDeclaration && (<TypeAliasDeclaration> stmt).name.text === componentPropsInterfaceName;
 
 export const isAllPropsType = (stmt: Statement): boolean =>
-    stmt && stmt.kind === SyntaxKind.TypeAliasDeclaration && (<InterfaceDeclaration> stmt).name.text === containerAllPropsTypeName;
+    stmt && stmt.kind === SyntaxKind.TypeAliasDeclaration && (<TypeAliasDeclaration> stmt).name.text === containerAllPropsTypeName;
 
 export const isComponentConstant = (stmt: Statement, componentName: string): boolean =>
     stmt && stmt.kind === SyntaxKind.VariableStatement && ((<VariableStatement> stmt).declarationList.declarations[0].name as Identifier).text === componentName;

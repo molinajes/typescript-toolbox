@@ -7,5 +7,5 @@ interface ArgumentInfo {
 interface TsToolboxTask {
     readonly command: string;
     readonly argumentInfo: ArgumentInfo[];
-    readonly execute: (args: string[]) => void;
+    readonly execute: (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => void;
 }

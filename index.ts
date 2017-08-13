@@ -4,6 +4,7 @@ import {task as addSubReducerTask} from './src/tasks/add-sub-reducer';
 import {task as addComponentTask} from './src/tasks/add-component';
 import {task as addContainerTask} from './src/tasks/add-container';
 import {task as addReduxTask} from './src/tasks/add-redux';
+import * as fs from 'fs';
 
 const tasks: TsToolboxTask[] = [addActionTask, addReducerTask, addSubReducerTask, addComponentTask, addContainerTask,
     addReduxTask];
@@ -31,4 +32,21 @@ if (numberOfRequiredArguments > taskArgs.length ||
     process.exit();
 }
 
-task.execute(taskArgs);
+let writeActions: { [filePath: string]: string } = {};
+
+const readFile = (filePath: string) => {
+    const fileExists = fs.existsSync(filePath);
+    return fileExists ? fs.readFileSync(filePath, 'utf8') : '';
+};
+
+const writeFile = (filePath: string, content: string) => {
+    writeActions[filePath] = content;
+};
+
+task.execute(taskArgs, readFile, writeFile);
+
+// TODO: Get user confirmation
+// Write files
+Object.keys(writeActions).forEach(filePath => {
+    fs.writeFileSync(filePath, writeActions[filePath], 'utf8');
+});

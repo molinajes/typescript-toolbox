@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as ts from 'typescript';
-import * as fs from 'fs';
 import {
     Identifier,
     InterfaceDeclaration,
@@ -174,22 +173,19 @@ export const addRedux = (code: string, componentName: string) => {
     }
 };
 
-export const execute = (args: string[]) => {
+export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const uiContainerFile = args[0];
     const fileNameNoExtension = removeFileExtension(path.basename(uiContainerFile));
     const uiComponentName = args[1] || convertHyphensToCamelCase(fileNameNoExtension);
-    const dirName = path.dirname(uiContainerFile);
 
-    // TODO: Use async methods
-    const componentFileExists = fs.existsSync(uiContainerFile);
+    const code = readFile(uiContainerFile);
 
-    if (!componentFileExists) {
+    if (!code || code.length === 0) {
         throw Error(`UI Component does not exist: ${uiContainerFile}. `);
     }
-    const code = componentFileExists ? fs.readFileSync(uiContainerFile, 'utf8') : '';
 
     const modifiedCode = addRedux(code, uiComponentName);
-    fs.writeFileSync(uiContainerFile, modifiedCode, 'utf8');
+    writeFile(uiContainerFile, modifiedCode);
 };
 
 export const task: TsToolboxTask = {

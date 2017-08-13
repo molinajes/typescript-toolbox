@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 import {
@@ -129,17 +128,14 @@ export const addSubReducer = (parentReducerCode: string, subReducerPath: string,
     }
 };
 
-export const execute = (args: string[]) => {
+export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const parentReducerPath = args[0];
     const subReducerPath = args[1];
     const statePropertyName = args[2];
-
-    // TODO: Use async methods
-    const parentReducerFileExists = fs.existsSync(parentReducerPath);
-    const parentReducerCode = parentReducerFileExists ? fs.readFileSync(subReducerPath, 'utf8') : '';
+    const parentReducerCode = readFile(subReducerPath);
 
     const newCode = addSubReducer(parentReducerCode, subReducerPath, statePropertyName);
-    fs.writeFileSync(parentReducerPath, newCode, 'utf8');
+    writeFile(parentReducerPath, newCode);
 };
 
 export const task: TsToolboxTask = {

@@ -12,7 +12,6 @@ import {
     UnionTypeNode,
     VariableStatement
 } from 'typescript';
-import * as fs from 'fs';
 import {convertCamelCaseToConstant} from '../utils/string-utils';
 import {createInterface} from '../utils/ts-utils';
 
@@ -39,21 +38,19 @@ export const createActionCreator = (name: string, typeConstantName: string) => {
         ts.createToken(SyntaxKind.EqualsGreaterThanToken),
         ts.createBlock([stmtReturn], true));
     const declaration = ts.createVariableDeclaration(actionCreateName, undefined, expr);
-    const stmActionCreator = ts.createVariableStatement(
+    return ts.createVariableStatement(
         [ts.createToken(SyntaxKind.ExportKeyword)],
         ts.createVariableDeclarationList([declaration], NodeFlags.Const)
     );
-    return stmActionCreator;
 };
 
 const createActionTypeConstants = (name: string) => {
     const expr = ts.createLiteral(name);
     const declaration = ts.createVariableDeclaration(name, undefined, expr);
-    const stmConstant = ts.createVariableStatement(
+    return ts.createVariableStatement(
         [ts.createToken(SyntaxKind.ExportKeyword)],
         ts.createVariableDeclarationList([declaration], NodeFlags.Const)
     );
-    return stmConstant;
 };
 
 const createOrUpdateActionUnionTypeDeclaration = (name: string, oldStmt?: Statement) => {
@@ -158,26 +155,22 @@ export const addAction = (code: string, actionName: string, actionTypeConstant: 
     }
 };
 
-export const execute = (args: string[]) => {
-    const uiComponentPath = args[0];
+export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
+    const actionFilePath = args[0];
     const actionName = args[1];
     const actionTypeConstant = args[2] || convertCamelCaseToConstant(actionName).toUpperCase();
-    const actionFilePath = path.join(uiComponentPath, 'action.ts');
-
-    // TODO: Use async methods
-    const actionFileExists = fs.existsSync(actionFilePath);
-    const code = actionFileExists ? fs.readFileSync(actionFilePath, 'utf8') : '';
+    const code = readFile(actionFilePath);
 
     const newCode = addAction(code, actionName, actionTypeConstant);
-    fs.writeFileSync(actionFilePath, newCode, 'utf8');
+    writeFile(actionFilePath, newCode);
 };
 
 export const task: TsToolboxTask = {
     argumentInfo: [
         {
-            description: 'UI Component Path',
+            description: 'Action File Path',
             required: true,
-            defaultValue: './'
+            defaultValue: './action.ts'
         },
         {
             description: 'Action Name',

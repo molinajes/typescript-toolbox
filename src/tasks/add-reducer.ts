@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 import {NodeFlags, Statement, SyntaxKind} from 'typescript';
@@ -88,11 +87,11 @@ export const addReducer = (actionPath: string) => {
     }
 };
 
-export const execute = (args: string[]) => {
+export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const uiComponentPath = args[0];
     const reducerFilePath = path.join(uiComponentPath, 'reducer.ts');
     const newCode = addReducer(reducerFilePath);
-    fs.writeFileSync(reducerFilePath, newCode, 'utf8');
+    writeFile(reducerFilePath, newCode);
 };
 
 export const task: TsToolboxTask = {

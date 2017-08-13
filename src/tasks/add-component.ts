@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 import {NodeFlags, Statement, SyntaxKind} from 'typescript';
-import * as fs from 'fs';
 import {convertCamelCaseToHyphens} from '../utils/string-utils';
 import {createEmptyInterface, createImport} from '../utils/ts-utils';
 
@@ -87,7 +86,7 @@ export const addComponent = (componentFilePath: string, componentName: string, c
     }
 };
 
-export const execute = (args: string[]) => {
+export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const uiComponentPath = args[0];
     const uiComponentName = args[1];
 
@@ -104,15 +103,14 @@ export const execute = (args: string[]) => {
     const fileName = `${convertCamelCaseToHyphens(uiComponentName)}-component.tsx`;
     const componentFilePath = path.join(uiComponentPath, fileName);
 
-    // TODO: Use async methods
-    const componentFileExists = fs.existsSync(componentFilePath);
+    const existingCode = readFile(componentFilePath);
 
-    if (componentFileExists) {
+    if (existingCode && existingCode.length > 0) {
         throw Error(`File already exists: ${componentFilePath}`);
     }
 
     const newCode = addComponent(componentFilePath, uiComponentName, componentType);
-    fs.writeFileSync(componentFilePath, newCode, 'utf8');
+    writeFile(componentFilePath, newCode);
 };
 
 export const task: TsToolboxTask = {

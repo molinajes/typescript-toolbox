@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as ts from 'typescript';
-import * as fs from 'fs';
 import {InterfaceDeclaration, NodeFlags, Statement, SyntaxKind} from 'typescript';
 import {convertHyphensToCamelCase, removeFileExtension} from '../utils/string-utils';
 import {
@@ -118,16 +117,16 @@ export const replacePropsInComponent = (code: string, containerFileName: string)
     }
 };
 
-export const execute = (args: string[]) => {
+export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const uiComponentFile = args[0];
     const fileNameNoExtension = removeFileExtension(path.basename(uiComponentFile));
     const uiComponentName = args[1] || convertHyphensToCamelCase(fileNameNoExtension);
     const dirName = path.dirname(uiComponentFile);
 
     // TODO: Use async methods
-    const componentFileExists = fs.existsSync(uiComponentFile);
+    const componentCode = readFile(uiComponentFile);
 
-    if (!componentFileExists) {
+    if (!componentCode || componentCode.length === 0) {
         throw Error(`UI Component does not exist: ${uiComponentFile}. 
         Use "ts-codebelt add-component ${dirName}" ${uiComponentName}" to create the component.`);
     }
@@ -140,13 +139,11 @@ export const execute = (args: string[]) => {
     const containerFileName = fileNameNoExtension.substr(0, fileNameNoExtension.length - '-component'.length);
     const containerFilePath = path.join(dirName, `${containerFileName}.ts`);
 
-    const componentCode = componentFileExists ? fs.readFileSync(uiComponentFile, 'utf8') : '';
-
     const modifiedComponentCode = replacePropsInComponent(componentCode, containerFileName);
-    fs.writeFileSync(uiComponentFile, modifiedComponentCode, 'utf8');
+    writeFile(uiComponentFile, modifiedComponentCode);
 
     const containerCode = addContainer(containerFilePath, componentCode, uiComponentFile, fileNameNoExtension, uiComponentName);
-    fs.writeFileSync(containerFilePath, containerCode, 'utf8');
+    writeFile(containerFilePath, containerCode);
 };
 
 export const task: TsToolboxTask = {

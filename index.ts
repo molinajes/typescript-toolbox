@@ -53,13 +53,9 @@ task.execute(taskArgs, readFile, writeFile);
 Object.keys(writeActions).forEach(filePath => {
     const oldCode = readFile(filePath);
     const newCode = writeActions[filePath];
-    const args = {
-        source: oldCode,
-        diff: newCode,
-        lang: 'text'
-    };
-
     const diff = jsdiff.diffLines(oldCode, newCode);
+
+    console.log(`The following changes will be applied to ${filePath}:`);
 
     diff.forEach(function (part) {
         if (!part.added && !part.removed) {

@@ -12,6 +12,7 @@ export const promptYesOrNo = (question: string, cb: (result: boolean) => void) =
     };
 
     prompt.get(property, function (err, result) {
-        cb(result.yesno);
+        const resultBool = !!result.yesno && (result.yesno === 'y' || result.yesno === 'yes');
+        cb(resultBool);
     });
 }

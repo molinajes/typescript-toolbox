@@ -76,6 +76,7 @@ Object.keys(writeActions).forEach(filePath => {
 });
 
 promptYesOrNo('Do you want to apply these changes?', result => {
+    console.log(result);
     if (!result) {
         console.log('Change are not applied.');
         return;

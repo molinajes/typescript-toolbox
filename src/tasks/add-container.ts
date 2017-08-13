@@ -3,7 +3,9 @@ import * as ts from 'typescript';
 import * as fs from 'fs';
 import {InterfaceDeclaration, NodeFlags, Statement, SyntaxKind} from 'typescript';
 import {convertHyphensToCamelCase, removeFileExtension} from '../utils/string-utils';
-import {createEmptyInterface, createImport, createUnionTypeDeclaration} from '../utils/ts-utils';
+import {
+    createEmptyInterface, createImport, createIntersectionTypeDeclaration
+} from '../utils/ts-utils';
 
 export const componentPropsInterfaceName = 'Props';
 export const containerAllPropsTypeName = 'AllProps';
@@ -22,7 +24,7 @@ export const addComponentImport = (componentName: string, componentFileName: str
     createImport([{element: componentName, alias: componentImportAlias(componentName)}], `./${componentFileName}`);
 
 export const addAllPropsType = () =>
-    createUnionTypeDeclaration(containerAllPropsTypeName, [{type: componentPropsInterfaceName}]);
+    createIntersectionTypeDeclaration(containerAllPropsTypeName, [{type: componentPropsInterfaceName}]);
 
 export const createContainerConstant = (componentName: string) => {
     const expr = ts.createIdentifier(componentImportAlias(componentName));
@@ -126,7 +128,7 @@ export const execute = (args: string[]) => {
     const componentFileExists = fs.existsSync(uiComponentFile);
 
     if (!componentFileExists) {
-        throw Error(`UI Component does not exist: ${componentFileExists}. 
+        throw Error(`UI Component does not exist: ${uiComponentFile}. 
         Use "ts-codebelt add-component ${dirName}" ${uiComponentName}" to create the component.`);
     }
 

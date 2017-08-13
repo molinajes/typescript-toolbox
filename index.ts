@@ -3,8 +3,10 @@ import {task as addReducerTask} from './src/tasks/add-reducer';
 import {task as addSubReducerTask} from './src/tasks/add-sub-reducer';
 import {task as addComponentTask} from './src/tasks/add-component';
 import {task as addContainerTask} from './src/tasks/add-container';
+import {task as addReduxTask} from './src/tasks/add-redux';
 
-const tasks: TsToolboxTask[] = [addActionTask, addReducerTask, addSubReducerTask, addComponentTask, addContainerTask];
+const tasks: TsToolboxTask[] = [addActionTask, addReducerTask, addSubReducerTask, addComponentTask, addContainerTask,
+    addReduxTask];
 
 const command = process.argv[2];
 const task = tasks.find(t => t.command === command);

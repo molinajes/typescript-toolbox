@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import {Modifier, Statement, SyntaxKind, TypeElement, TypeNode} from 'typescript';
+import {Modifier, NodeFlags, Statement, SyntaxKind, TypeElement, TypeNode} from 'typescript';
 
 export interface Import {
     readonly element: string;
@@ -81,4 +81,45 @@ export const createUnionTypeDeclaration = (name: string, types: UnionTypeEntry[]
         name,
         [],
         ts.createUnionTypeNode(unionTypes));
+};
+
+export const createIntersectionTypeDeclaration = (name: string, types: UnionTypeEntry[]) => {
+    const unionTypes = types.map(t => ts.createTypeReferenceNode(t.type, []));
+    return ts.createTypeAliasDeclaration([],
+        [ts.createToken(SyntaxKind.ExportKeyword)],
+        name,
+        [],
+        ts.createIntersectionTypeNode(unionTypes));
+};
+
+export interface FunctionParameter {
+    readonly name: string;
+    readonly type: string;
 }
+
+export const createArrowFunction = (name: string, parameters: FunctionParameter[], returnType?: string) => {
+    const functionParameters =
+        parameters.map(p =>
+            ts.createParameter(
+                [],
+                [],
+                undefined,
+                p.name,
+                undefined,
+                ts.createTypeReferenceNode(p.type, [])));
+
+    const stmtReturn = ts.createReturn(ts.createObjectLiteral());
+
+    const expr = ts.createArrowFunction(
+        [],
+        [],
+        functionParameters,
+        ts.createTypeReferenceNode(returnType, []),
+        ts.createToken(SyntaxKind.EqualsGreaterThanToken),
+        ts.createBlock([stmtReturn], true));
+    const declaration = ts.createVariableDeclaration(name, undefined, expr);
+    return ts.createVariableStatement(
+        [ts.createToken(SyntaxKind.ExportKeyword)],
+        ts.createVariableDeclarationList([declaration], NodeFlags.Const)
+    );
+};

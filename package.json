@@ -17,7 +17,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "prepare": "tsc"
+    "prepack": "tsc"
   },
   "dependencies": {
     "@types/jest": "^20.0.6",

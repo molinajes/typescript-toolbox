@@ -8,9 +8,9 @@
     "apollo-client",
     "rekit"
   ],
-  "main": "lib/index.js",
+  "main": "./lib/index.js",
   "bin": {
-    "ts-tool-belt": "lib/index.js"
+    "ts-tool-belt": "./lib/index.js"
   },
   "author": "Marian Palkus <marian.palkus@cap3.de>",
   "description": "Command line tool to manage actions, reducers, components and apollo queries/mutations.",

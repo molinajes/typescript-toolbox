@@ -1,10 +1,14 @@
+import * as fs from 'fs';
 import {task as addActionTask} from './src/tasks/add-action';
 import {task as addReducerTask} from './src/tasks/add-reducer';
 import {task as addSubReducerTask} from './src/tasks/add-sub-reducer';
 import {task as addComponentTask} from './src/tasks/add-component';
 import {task as addContainerTask} from './src/tasks/add-container';
 import {task as addReduxTask} from './src/tasks/add-redux';
-import * as fs from 'fs';
+
+require('colors');
+import * as jsdiff from 'diff';
+import {promptYesOrNo} from './src/utils/prompt-utils';
 
 const tasks: TsToolboxTask[] = [addActionTask, addReducerTask, addSubReducerTask, addComponentTask, addContainerTask,
     addReduxTask];
@@ -46,7 +50,45 @@ const writeFile = (filePath: string, content: string) => {
 task.execute(taskArgs, readFile, writeFile);
 
 // TODO: Get user confirmation
-// Write files
 Object.keys(writeActions).forEach(filePath => {
-    fs.writeFileSync(filePath, writeActions[filePath], 'utf8');
+    const oldCode = readFile(filePath);
+    const newCode = writeActions[filePath];
+    const args = {
+        source: oldCode,
+        diff: newCode,
+        lang: 'text'
+    };
+
+    const diff = jsdiff.diffLines(oldCode, newCode);
+
+    diff.forEach(function (part) {
+        if (!part.added && !part.removed) {
+            return;
+        }
+
+        const outPutPrefix = part.added ? '+ ' : part.removed ? '- ' : '';
+
+        // green for additions, red for deletions
+        // grey for common parts
+        const color = part.added ? 'green' :
+            part.removed ? 'red' : 'grey';
+        const outputText = outPutPrefix + part.value;
+        console.log(outputText[color]);
+    });
+    console.log()
+});
+
+promptYesOrNo('Do you want to apply these changes?', result => {
+    if (!result) {
+        console.log('Change are not applied.');
+        return;
+    }
+    console.log('Applying changes..');
+
+    // Write files
+    Object.keys(writeActions).forEach(filePath => {
+        console.log(filePath);
+        fs.writeFileSync(filePath, writeActions[filePath], 'utf8');
+        console.log('OK ✔');
+    });
 });

@@ -1,14 +1,14 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 import {InterfaceDeclaration, NodeFlags, Statement, SyntaxKind} from 'typescript';
-import {convertHyphensToCamelCase, removeFileExtension} from '../utils/string-utils';
+import {capitalizeFirstLetter, convertHyphensToCamelCase, removeFileExtension} from '../utils/string-utils';
 import {
     createEmptyInterface, createImport, createIntersectionTypeDeclaration
 } from '../utils/ts-utils';
 
 export const componentPropsInterfaceName = 'Props';
 export const containerAllPropsTypeName = 'AllProps';
-export const componentImportAlias = (componentName: string) => `${componentName}Component`;
+export const componentImportAlias = (componentName: string) => `${capitalizeFirstLetter(componentName)}Component`;
 
 export const addPropsImport = (containerFileName: string): Statement =>
     createImport(
@@ -117,10 +117,16 @@ export const replacePropsInComponent = (code: string, containerFileName: string)
     }
 };
 
+export const componentNameFromComponentFilePath = (containerFilePath: string) => {
+    const fileNameNoExtension = removeFileExtension(path.basename(containerFilePath));
+    return capitalizeFirstLetter(convertHyphensToCamelCase(fileNameNoExtension));
+};
+
 export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const uiComponentFile = args[0];
     const fileNameNoExtension = removeFileExtension(path.basename(uiComponentFile));
-    const uiComponentName = args[1] || convertHyphensToCamelCase(fileNameNoExtension);
+    const containerFileName = fileNameNoExtension.substr(0, fileNameNoExtension.length - '-component'.length);
+    const uiComponentName = args[1] || componentNameFromComponentFilePath(containerFileName);
     const dirName = path.dirname(uiComponentFile);
 
     // TODO: Use async methods
@@ -136,7 +142,6 @@ export const execute = (args: string[], readFile: (path: string) => string, writ
         Expecting file name to end with "-component".`);
     }
 
-    const containerFileName = fileNameNoExtension.substr(0, fileNameNoExtension.length - '-component'.length);
     const containerFilePath = path.join(dirName, `${containerFileName}.ts`);
 
     const modifiedComponentCode = replacePropsInComponent(componentCode, containerFileName);

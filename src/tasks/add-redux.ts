@@ -14,7 +14,7 @@ import {
 } from 'typescript';
 import {convertHyphensToCamelCase, removeFileExtension} from '../utils/string-utils';
 import {createArrowFunction, createEmptyInterface, createImport} from '../utils/ts-utils';
-import {containerAllPropsTypeName} from './add-container';
+import {componentNameFromComponentFilePath, containerAllPropsTypeName} from './add-container';
 
 export const componentPropsInterfaceName = 'Props';
 export const reduxStatePropsInterfaceName = 'ReduxStateProps';
@@ -175,8 +175,7 @@ export const addRedux = (code: string, componentName: string) => {
 
 export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const uiContainerFile = args[0];
-    const fileNameNoExtension = removeFileExtension(path.basename(uiContainerFile));
-    const uiComponentName = args[1] || convertHyphensToCamelCase(fileNameNoExtension);
+    const uiComponentName = args[1] || componentNameFromComponentFilePath(uiContainerFile);
 
     const code = readFile(uiContainerFile);
 

@@ -38,6 +38,6 @@ test('addContainer', () => {
         'export const MyComponent = MyComponentComponent;\n';
 
     const modifiedCode = addContainer('my-component', componentCode, 'my-component-component', 'my-component-component',
-        'MyComponent');
+        'MyComponent', 'MyComponentComponent');
     expect(modifiedCode).toEqual(expectedResult);
 });

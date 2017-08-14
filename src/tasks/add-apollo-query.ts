@@ -267,6 +267,7 @@ export const addApolloQuery = (code: string, graphQlFilePath: string, queryName:
                 newStatements.push(addComposeImport());
             }
             addedImports = true;
+            newStatements.push(statement);
         }
         else if (isApolloPropsType(statement)) {
             newStatements.push(createQueryType(queryName, queryModelsTypeName));
@@ -315,17 +316,18 @@ export const addApolloQuery = (code: string, graphQlFilePath: string, queryName:
 export const execute = (args: string[], readFile: (path: string) => string, writeFile: (path: string, content: string) => void) => {
     const containerFilePath = args[0];
     const graphqlFilePath = args[1];
-    const fileNameNoExtension = removeFileExtension(path.basename(graphqlFilePath));
-    const queryName = args[2] || convertHyphensToCamelCase(fileNameNoExtension);
+    const containerFileNameNoExtension = removeFileExtension(path.basename(containerFilePath));
+    const graphQlFileNameNoExtension = removeFileExtension(path.basename(graphqlFilePath));
+    const queryName = args[2] || convertHyphensToCamelCase(graphQlFileNameNoExtension);
     const graphQlDirPath = path.dirname(graphqlFilePath);
-    const queryModelsFilePath = args[3] || path.join(graphQlDirPath, `${fileNameNoExtension}-models.ts`);
-    const componentName = args[4] || convertHyphensToCamelCase(fileNameNoExtension);
+    const queryModelsFilePath = args[3] || path.join(graphQlDirPath, `${graphQlFileNameNoExtension}-models.ts`);
+    const componentName = args[4] || capitalizeFirstLetter(convertHyphensToCamelCase(containerFileNameNoExtension));
 
     const code = readFile(containerFilePath);
     const queryModelsCode = readFile(queryModelsFilePath);
 
     const newCode = addApolloQuery(code, graphqlFilePath, queryName, queryModelsFilePath, queryModelsCode, componentName);
-    writeFile(graphqlFilePath, newCode);
+    writeFile(containerFilePath, newCode);
 };
 
 export const task: TsToolboxTask = {

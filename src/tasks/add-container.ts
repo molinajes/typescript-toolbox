@@ -16,11 +16,14 @@ export const addPropsImport = (containerFileName: string): Statement =>
             element: containerAllPropsTypeName,
             alias: componentPropsInterfaceName
         }],
-        `./${containerFileName}`
+        `./${removeFileExtension(containerFileName)}`
     );
 
 export const addComponentImport = (componentName: string, componentFileName: string): Statement =>
-    createImport([{element: componentName, alias: componentImportAlias(componentName)}], `./${componentFileName}`);
+    createImport([{
+        element: componentName,
+        alias: componentImportAlias(componentName)
+    }], `./${removeFileExtension(componentFileName)}`);
 
 export const addAllPropsType = () =>
     createIntersectionTypeDeclaration(containerAllPropsTypeName, [{type: componentPropsInterfaceName}]);

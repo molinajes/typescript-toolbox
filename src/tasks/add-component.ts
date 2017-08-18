@@ -8,9 +8,6 @@ export const componentPropsInterfaceName = 'Props';
 export type AddComponentType = 'stateless' | 'class' | 'stateful';
 
 export const createImports = (type: AddComponentType): Statement[] => {
-    const reactImportSpecifier =
-        ts.createNamespaceImport(ts.createIdentifier('React'));
-
     const reactImport = createNamespaceImport('React', 'react');
 
     const importedComponent = type === 'class' ? 'Component' : (type === 'stateless' ? 'StatelessComponent' : 'Component');

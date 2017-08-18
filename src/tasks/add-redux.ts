@@ -1,8 +1,6 @@
-import * as path from 'path';
 import * as ts from 'typescript';
 import {
     Identifier,
-    InterfaceDeclaration,
     NodeArray,
     NodeFlags,
     Statement,
@@ -12,7 +10,6 @@ import {
     UnionOrIntersectionTypeNode,
     VariableStatement
 } from 'typescript';
-import {convertHyphensToCamelCase, removeFileExtension} from '../utils/string-utils';
 import {createArrowFunction, createEmptyInterface, createImport} from '../utils/ts-utils';
 import {componentNameFromComponentFilePath, containerAllPropsTypeName} from './add-container';
 

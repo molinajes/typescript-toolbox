@@ -26,7 +26,7 @@ export const addGraphQlFilePath = (queryName: string, graphQlFilePath: string): 
     createNamespaceImport(queryName, graphQlFilePath);
 
 export const addQueryModelImport = (queryModelTypeName: string, queryVariablesTypeName: string, queryModelsFilePath: string): Statement =>
-    createImport([{element: queryModelTypeName}, {element: queryVariablesTypeName}], queryModelsFilePath);
+    createImport([{element: queryModelTypeName}, {element: queryVariablesTypeName}], removeFileExtension(queryModelsFilePath));
 
 export const createQueryType = (queryName: string, queryModelTypeName: string | any) => {
     const queryModelType = queryModelTypeName ? queryModelTypeName : 'any';
@@ -232,7 +232,7 @@ export const isWithApolloConstant = (stmt: Statement): boolean =>
     && (<VariableStatement> stmt).declarationList.declarations[0].name.kind === SyntaxKind.Identifier
     && (<Identifier> (<VariableStatement> stmt).declarationList.declarations[0].name).text === withApolloConstantName;
 
-export const addApolloQuery = (code: string, graphQlFilePath: string, queryName: string, queryModelsFilePath: string, queryModelsCode: string, componentName: string) => {
+export const addApolloQuery = (code: string, relativeGraphQlFilePath: string, queryName: string, relativeQueryModelsFilePath: string, queryModelsCode: string, componentName: string) => {
     // TODO: Use real path?
     const originalSourceFile = ts.createSourceFile("container.ts", code, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
@@ -257,10 +257,10 @@ export const addApolloQuery = (code: string, graphQlFilePath: string, queryName:
             if (addGraphQlImports) {
                 newStatements.push(addApolloImport());
             }
-            newStatements.push(addGraphQlFilePath(queryName, graphQlFilePath));
+            newStatements.push(addGraphQlFilePath(queryName, relativeGraphQlFilePath));
 
             if (queryModelsTypeName || queryVariablesTypeName) {
-                newStatements.push(addQueryModelImport(queryModelsTypeName, queryVariablesTypeName, queryModelsFilePath));
+                newStatements.push(addQueryModelImport(queryModelsTypeName, queryVariablesTypeName, relativeQueryModelsFilePath));
             }
 
             if (needComposeImport && !composeImportExists) {
@@ -326,7 +326,10 @@ export const execute = (args: string[], readFile: (path: string) => string, writ
     const code = readFile(containerFilePath);
     const queryModelsCode = readFile(queryModelsFilePath);
 
-    const newCode = addApolloQuery(code, graphqlFilePath, queryName, queryModelsFilePath, queryModelsCode, componentName);
+    const relativeGraphqlFilePath = path.relative(containerFilePath, graphqlFilePath);
+    const relativeQueryModelsFilePath = path.relative(containerFilePath, queryModelsFilePath);
+
+    const newCode = addApolloQuery(code, relativeGraphqlFilePath, queryName, relativeQueryModelsFilePath, queryModelsCode, componentName);
     writeFile(containerFilePath, newCode);
 };
 

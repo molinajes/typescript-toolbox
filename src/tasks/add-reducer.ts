@@ -2,13 +2,14 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import {NodeFlags, Statement, SyntaxKind} from 'typescript';
 import {createEmptyInterface, createImport} from '../utils/ts-utils';
+import {removeFileExtension} from '../utils/string-utils';
 
 export const stateInterfaceName = 'State';
 export const defaultStateConstName = 'defaultState';
 export const reducerFunctionName = `reducer`;
 
 export const createActionImport = (actionPath: string): Statement =>
-    createImport([{element: 'Action'}], actionPath);
+    createImport([{element: 'Action'}], removeFileExtension(actionPath));
 
 export const createInterface = (): Statement =>
     createEmptyInterface(stateInterfaceName);

@@ -34,7 +34,7 @@ test('addApolloQuery', () => {
         'import { connect, Disptach } from "react-redux";\n' +
         'import { graphql, DefaultChildProps } from "react-apollo";\n' +
         'import * as dataQuery from "./query/data-query.graphql";\n' +
-        'import { DataQuery, DataQueryVariables } from "./query/data-query-models.ts";\n' +
+        'import { DataQuery, DataQueryVariables } from "./query/data-query-models";\n' +
         'interface Props {\n' +
         '    readonly myProp: string;\n' +
         '}\n' +
@@ -64,7 +64,7 @@ test('addApolloQuery to container with apollo query', () => {
         'import { connect, Disptach } from "react-redux";\n' +
         'import { graphql, DefaultChildProps } from "react-apollo";\n' +
         'import * as dataQuery from "./query/data-query.graphql";\n' +
-        'import { DataQuery, DataQueryVariables } from "./query/data-query-models.ts";\n' +
+        'import { DataQuery, DataQueryVariables } from "./query/data-query-models";\n' +
         'export interface ReduxStateProps {\n' +
         '}\n' +
         'export interface ReduxDispatchProps {\n' +
@@ -96,9 +96,9 @@ test('addApolloQuery to container with apollo query', () => {
         'import { connect, Disptach } from "react-redux";\n' +
         'import { graphql, DefaultChildProps } from "react-apollo";\n' +
         'import * as dataQuery from "./query/data-query.graphql";\n' +
-        'import { DataQuery, DataQueryVariables } from "./query/data-query-models.ts";\n' +
+        'import { DataQuery, DataQueryVariables } from "./query/data-query-models";\n' +
         'import * as otherDataQuery from "./query/other-data-query.graphql";\n' +
-        'import { OtherDataQuery, OtherDataQueryVariables } from "./query/other-data-query-models.ts";\n' +
+        'import { OtherDataQuery, OtherDataQueryVariables } from "./query/other-data-query-models";\n' +
         'import { compose } from "redux";\n' +
         'export interface ReduxStateProps {\n' +
         '}\n' +

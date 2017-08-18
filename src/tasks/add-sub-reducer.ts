@@ -76,13 +76,13 @@ export const isDefaultStateStatement = (stmt: Statement): boolean =>
     stmt.kind === SyntaxKind.VariableStatement
     && (<Identifier>(<VariableStatement> stmt).declarationList.declarations[0].name).text === defaultStateConstantName;
 
-export const addSubReducer = (parentReducerCode: string, subReducerPath: string, statePropertyName: string) => {
+export const addSubReducer = (parentReducerCode: string, relativeSubReducerPath: string, statePropertyName: string) => {
     // TODO: Real path necessary?
     const originalSourceFile = ts.createSourceFile("reducer.ts", parentReducerCode, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
     const resultFile = ts.createSourceFile(path.join(__dirname, "reducer.ts"), "", ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
-    const subReducerPathNoFileExt = removeFileExtension(subReducerPath);
-    const subUiComponentName = path.basename(subReducerPathNoFileExt);
+    const relativeSubReducerPathNoFileExt = removeFileExtension(relativeSubReducerPath);
+    const subUiComponentName = path.basename(relativeSubReducerPathNoFileExt);
 
     let newStatements = [];
     let addedImportStatement = false;
@@ -92,7 +92,7 @@ export const addSubReducer = (parentReducerCode: string, subReducerPath: string,
 
         // Insert new import declaration directly after existing import declarations
         if (!addedImportStatement && statement.kind != SyntaxKind.ImportDeclaration) {
-            newStatements.push(createReducerImports(subReducerPathNoFileExt, subUiComponentName));
+            newStatements.push(createReducerImports(relativeSubReducerPathNoFileExt, subUiComponentName));
             addedImportStatement = true;
         }
 
@@ -134,7 +134,9 @@ export const execute = (args: string[], readFile: (path: string) => string, writ
     const statePropertyName = args[2];
     const parentReducerCode = readFile(subReducerPath);
 
-    const newCode = addSubReducer(parentReducerCode, subReducerPath, statePropertyName);
+    const relativeSubReducerPath = path.relative(parentReducerPath, subReducerPath);
+
+    const newCode = addSubReducer(parentReducerCode, relativeSubReducerPath, statePropertyName);
     writeFile(parentReducerPath, newCode);
 };
 

@@ -116,9 +116,7 @@ yarn install
 
 ## Meta
 
-Marian Palkus – [@mpalkus](https://twitter.com/mpalkus)
-
-[https://github.com/MarianPalkus](https://github.com/MarianPalkus/)
+[https://github.com/danielnikravesh](https://github.com/danielnikravesh/)
 
 ## Contributing
 
